@@ -4,6 +4,7 @@ from datetime import *
 import time
 import sendMail
 import checkTime
+import WorkInTime
 
 class Xjgl(object):
     __highIn = 0
@@ -31,26 +32,14 @@ class Xjgl(object):
             sendMail.sendMail(sub, sub)
 
 xjglWatch = Xjgl(6)
-while True:
-    outTime = ['9:30', '11:30', '13:00', '15:00']
-    now = datetime.now()
-    outTimeType = [time.mktime(time.strptime(str(now.year) + '-' + str(now.month) + '-' + str(now.day) + \
-                   ' ' + i + ':00', '%Y-%m-%d %H:%M:%S')) for i in outTime]
 
+while True:
+    print("现金管理正在运行")
+    timeTrade = [['9:30', '11:30'], ['13:00', '15:00']]
+    workTime = WorkInTime.WorkInTime(timeTrade)
     if datetime.now().weekday() < 5:
         print(datetime.now())
-        timeNow = time.time()
-        if timeNow > outTimeType[3]:    #停市后
-            sleepTime = round(outTimeType[0]-timeNow+24*60*60,0)
-            print(sleepTime)
-            time.sleep(sleepTime)
-        elif timeNow > outTimeType[1] and timeNow < outTimeType[2]:
-            #休市期间
-            sleepTime = round(outTimeType[2]-timeNow)
-            print(sleepTime)
-            time.sleep(sleepTime)
-
-        if checkTime.checkTime(9,14):
-            xjglWatch.WatchXjgl()
+        workTime.relax()
+        xjglWatch.WatchXjgl()
         time.sleep(60)
 
