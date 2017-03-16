@@ -19,13 +19,14 @@ class WorkInTime():
         timeBucket = self.__timeType
         if (timeNow > timeBucket[-1][1]):      #大于一天终止时间
             sleepTime = round(timeBucket[-1][0] - timeNow + 24 * 60 * 60, 0)
-
             time.sleep(sleepTime+self.addTime)
+        elif timeNow < timeBucket[0][0]:      #小于一天开始时间
+                sleepTime = round(timeBucket[0][0] - timeNow)
+                time.sleep(sleepTime + self.addTime)
         else:
             for i in range(len(timeBucket)-1)[::-1]:
                 if (timeNow > timeBucket[i][1] and timeNow <= timeBucket[i+1][0]):
                     sleepTime = round(timeBucket[i+1][0]-timeNow)
-
                     time.sleep(sleepTime+self.addTime)
 
 
