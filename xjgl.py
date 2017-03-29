@@ -1,9 +1,11 @@
+from sys import path
+path.append(r'D:\zzz\joinquant\sendEmail')
+path.append(r'D:\zzz\joinquant\WorkInTime')
 import json
 import requests
 from datetime import *
 import time
 import sendMail
-import checkTime
 import WorkInTime
 
 class Xjgl(object):
@@ -11,7 +13,10 @@ class Xjgl(object):
 
     def __init__(self, highIn):
         self.__highIn = highIn
-    pass
+        self.__initHigh = highIn
+
+    def reset(self):
+        self.__highIn = self.__initHigh
 
     def WatchXjgl(self):
         sendString = ''
@@ -23,23 +28,26 @@ class Xjgl(object):
         i = 0
         #for row in jsonXjgl['rows']:
         row = jsonXjgl['rows'][0]
-        print(row)
-        rowHigh = float(row['cell']['high'])
+        #print(row)
+        rowHigh = float(row['cell']['daily_profit'])
         if rowHigh > self.__highIn:    #新高超过前基准
-            sub = '逆回购: ' + row['id'] + ' 破 ' + str(self.__highIn) + ', 现价: ' + row['cell']['price']
+            sub = '逆回购: ' + row['id'] + ' 破 ' + str(self.__highIn) + ', 现日年化: ' + row['cell']['daily_profit']
             self.__highIn = max(self.__highIn * 1.3, rowHigh)
             print(sub)
-            sendMail.sendMail(sub, sub)
+            sendMail.sendMail(sub, "")
 
 xjglWatch = Xjgl(6)
+now = datetime.now()
+nowDay = now.day
 
+print("现金管理正在运行")
+timeTrade = [['9:29', '11:30'], ['13:00', '15:00']]
+workTime = WorkInTime.WorkInTime(timeTrade)
 while True:
-    print("现金管理正在运行")
-    timeTrade = [['9:30', '11:30'], ['13:00', '15:00']]
-    workTime = WorkInTime.WorkInTime(timeTrade)
-    if datetime.now().weekday() < 5:
-        print(datetime.now())
-        workTime.relax()
+    if now.weekday() < 5:
+        if workTime.isNewDay():
+            xjglWatch.reset()
+        #print(datetime.now())
         xjglWatch.WatchXjgl()
-        time.sleep(60)
+        workTime.relax()
 
