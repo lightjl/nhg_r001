@@ -20,23 +20,26 @@ class Xjgl(object):
 
     def WatchXjgl(self):
         sendString = ''
-        check_seesion = requests.Session()
-        url = 'https://www.jisilu.cn/data/repo/sz_repo_list/?___t=1489544161142'
-        xjglInfo = check_seesion.get(url)
-        #print(xjglInfo.content.decode())
-        jsonXjgl = json.loads(xjglInfo.content.decode())
+        try:
+            check_seesion = requests.Session()
+            url = 'https://www.jisilu.cn/data/repo/sz_repo_list/?___t=1489544161142'
+            xjglInfo = check_seesion.get(url)
+            #print(xjglInfo.content.decode())
+            jsonXjgl = json.loads(xjglInfo.content.decode())
+        except:
+            return
         i = 0
         #for row in jsonXjgl['rows']:
         row = jsonXjgl['rows'][0]
         #print(row)
-        rowHigh = float(row['cell']['daily_profit'])
+        rowHigh = float(row['cell']['daily_profit2'])
         if rowHigh > self.__highIn:    #新高超过前基准
-            sub = '逆回购: ' + row['id'] + ' 破 ' + str(self.__highIn) + ', 现日年化: ' + row['cell']['daily_profit']
+            sub = '逆回购: ' + row['id'] + ' 破 ' + str(self.__highIn) + ', 现日年化: ' + row['cell']['daily_profit2']
             self.__highIn = max(self.__highIn * 1.3, rowHigh)
             print(sub)
-            sendMail.sendMail(sub, "")
+            #sendMail.sendMail(sub, "")
 
-xjglWatch = Xjgl(6)
+xjglWatch = Xjgl(4)
 now = datetime.now()
 nowDay = now.day
 
