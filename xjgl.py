@@ -26,6 +26,11 @@ class Xjgl(object):
     def WatchXjgl(self):
         sendString = ''
         if datetime.now().day != self.__setDay:
+            self.__setDay = now.day
+
+    def WatchXjgl(self):
+        sendString = ''
+        if now.day != self.__setDay:
             self.reset()
         try:
             check_seesion = requests.Session()
